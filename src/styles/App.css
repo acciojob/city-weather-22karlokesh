@@ -10,3 +10,9 @@ div {
 h1 {
   color: #3498db;
 }
+
+.weather {
+  margin-top: 20px;
+  text-align: center;
+  min-height: 100px; /* ensures div has height */
+}
