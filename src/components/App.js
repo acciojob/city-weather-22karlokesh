@@ -17,34 +17,36 @@ import './../styles/App.css';
 const App = () => {
   const [query, setQuery] = useState("");
   const [weather, setWeather] = useState(null);
+  const [error, setError] = useState("");
 
-  const apiKey = "YOUR_API_KEY_HERE"; // replace with your key
+  const apiKey = "YOUR_API_KEY_HERE";
 
   const fetchWeather = (city) => {
     fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`)
-      .then((res) => {
-        if (!res.ok) {
-          throw new Error("City not found");
-        }
+      .then(res => {
+        if (!res.ok) throw new Error("City not found");
         return res.json();
       })
-      .then((data) => {
+      .then(data => {
         setWeather({
           name: data.name,
           temp: data.main.temp,
           desc: data.weather[0].description,
           icon: data.weather[0].icon
         });
-        setQuery(""); // clear input after valid fetch
+        setError("");
       })
       .catch(() => {
         setWeather(null);
+        setError("City not found");
       });
   };
 
   const handleKeyPress = (e) => {
     if (e.key === "Enter" && query.trim() !== "") {
-      fetchWeather(query.trim());
+      const city = query.trim();
+      setQuery(""); // ✅ clear input immediately
+      fetchWeather(city);
     }
   };
 
@@ -60,13 +62,15 @@ const App = () => {
         placeholder="Enter city"
       />
       <div className="weather">
-        {weather && (
+        {weather ? (
           <>
             <h2>{weather.name}</h2>
             <img src={`https://openweathermap.org/img/wn/${weather.icon}@2x.png`} alt={weather.desc} />
             <p>{weather.desc}</p>
             <p>Temperature: {weather.temp}°C</p>
           </>
+        ) : (
+          <p>{error || "Type a city and press Enter"}</p>
         )}
       </div>
     </div>
@@ -74,3 +78,4 @@ const App = () => {
 };
 
 export default App;
+
